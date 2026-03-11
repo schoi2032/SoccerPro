@@ -120,10 +120,6 @@
                             <h1 class="text-3xl bungee text-white italic leading-none">WORLD TOURNAMENT</h1>
                             <p id="my-nick-display" class="text-yellow-500 bungee text-xs mt-1 opacity-80"></p>
                         </div>
-                        <div class="flex gap-2">
-                            <input id="challenge-nick" type="text" placeholder="PLAYER NAME" class="bg-white/5 border border-white/10 rounded px-3 py-2 text-[10px] bungee w-32 focus:border-blue-500 outline-none">
-                            <button id="send-challenge" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded bungee text-[10px] transition-colors">CHALLENGE</button>
-                        </div>
                     </div>
                     
                     <div id="bracket-ui" class="grid grid-cols-4 gap-4 mb-6 overflow-y-auto pr-2 text-left flex-1 min-h-0">
@@ -181,18 +177,8 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // --- CONFIG & INIT ---
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'soccer-elite-001';
-
+    <script>
+        // --- CONFIG & INIT (No Firebase version) ---
         const WIDTH = 1200, HEIGHT = 700, GROUND_Y = 640;
         const GRAVITY = 0.55, BALL_BOUNCE = 0.85, FRICTION = 0.98;
         const GOAL_WIDTH = 80, GOAL_HEIGHT = 200;
@@ -218,7 +204,7 @@
         ];
 
         let bracket = { r16: [], qf: [], sf: [], final: [] };
-        let activeMatch = null, nickname = "", user = null, lobbyUnsubscribe = null;
+        let activeMatch = null, nickname = "";
         let p1Team, p2Team, p1ActiveIdx = 0, p2ActiveIdx = 0;
         let score = [0, 0], gameTime = 30, gameRunning = false, isGameOver = false, isGoalScored = false;
         const keys = {};
@@ -332,6 +318,7 @@
         function mainLoop() {
             if (isGameOver) return;
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            
             // Pitch Markings
             ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 4;
             ctx.beginPath(); ctx.moveTo(WIDTH/2, GROUND_Y); ctx.lineTo(WIDTH/2, 100); ctx.stroke();
@@ -343,7 +330,8 @@
             ctx.strokeRect(WIDTH - GOAL_WIDTH, GROUND_Y - GOAL_HEIGHT, GOAL_WIDTH + 5, GOAL_HEIGHT);
             
             p1.update(); p2.update(); ball.update();
-            // Collision
+            
+            // Player-Ball Collision
             [p1, p2].forEach(p => {
                 const dx = ball.x - p.x, dy = ball.y - p.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
@@ -361,11 +349,9 @@
             if (gameRunning) requestAnimationFrame(mainLoop);
         }
 
-        // --- AUTH & TOURNAMENT HUB ---
-        async function joinLobby() {
+        // --- HUB LOGIC (No Firebase) ---
+        function joinLobby() {
             const input = document.getElementById('user-nick');
-            const btn = document.getElementById('join-btn');
-            const spinner = document.getElementById('join-spinner');
             nickname = input.value.trim().toUpperCase();
             
             if (!nickname || nickname.length < 2) {
@@ -374,72 +360,17 @@
                 return;
             }
 
-            btn.disabled = true;
-            spinner.style.display = 'block';
-
-            try {
-                // Ensure Auth first
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Auth state check
-                onAuthStateChanged(auth, async (authenticatedUser) => {
-                    if (!authenticatedUser || user) return;
-                    user = authenticatedUser;
-                    
-                    // Register User
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'lobby', user.uid), {
-                        nickname,
-                        lastSeen: Date.now(),
-                        status: 'online'
-                    });
-
-                    document.getElementById('nickname-overlay').classList.add('hidden');
-                    document.getElementById('tournament-menu').classList.remove('hidden');
-                    document.getElementById('my-nick-display').innerText = `LOGGED IN AS: ${nickname}`;
-                    
-                    setupLobbyListeners();
-                });
-            } catch (err) {
-                console.error("Lobby join error:", err);
-                btn.disabled = false;
-                spinner.style.display = 'none';
-            }
-        }
-
-        function setupLobbyListeners() {
-            lobbyUnsubscribe = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'challenges'), (snapshot) => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const data = change.doc.data();
-                        if (data.target === nickname && (Date.now() - data.timestamp < 10000)) {
-                            if (confirm(`${data.from} CHALLENGED YOU! ACCEPT?`)) {
-                                p1Team = allTeams[Math.floor(Math.random() * allTeams.length)];
-                                p2Team = allTeams[Math.floor(Math.random() * allTeams.length)];
-                                gameTime = 90;
-                                startMatch();
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
-        async function sendChallenge() {
-            const target = document.getElementById('challenge-nick').value.trim().toUpperCase();
-            if (!target || target === nickname) return;
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'challenges'), {
-                    from: nickname, target, timestamp: Date.now()
-                });
-                alert("CHALLENGE SENT!");
-            } catch(e) { console.error(e); }
+            // Simple transition without Firebase
+            document.getElementById('nickname-overlay').classList.add('hidden');
+            document.getElementById('tournament-menu').classList.remove('hidden');
+            document.getElementById('my-nick-display').innerText = `LOGGED IN AS: ${nickname}`;
+            
+            initTournament();
         }
 
         function initTournament() {
+            // Reset bracket
+            bracket = { r16: [], qf: [], sf: [], final: [] };
             let pool = [...allTeams].sort(() => Math.random() - 0.5);
             for(let i=0; i<8; i++) bracket.r16.push({ id: `r16-${i}`, p1: pool[i*2], p2: pool[i*2+1], winner: null });
             ['qf', 'sf', 'final'].forEach(r => {
@@ -491,12 +422,17 @@
             document.getElementById('hud-p2-score').innerText = '0';
             p1ActiveIdx = 0; p2ActiveIdx = 0;
             ball.reset(); p1.reset(); p2.reset();
+            
+            const timerDisplay = document.getElementById('timer');
+            const initialMatchTime = gameTime;
+            
             mainLoop();
+            
             const timerInt = setInterval(() => {
                 if(!gameRunning) { clearInterval(timerInt); return; }
                 if(!isGoalScored) gameTime--;
                 const m = Math.floor(gameTime/60), s = gameTime%60;
-                document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+                timerDisplay.innerText = `${m}:${s<10?'0':''}${s}`;
                 if(gameTime <= 0) { clearInterval(timerInt); finishMatch(); }
             }, 1000);
         }
@@ -523,7 +459,6 @@
 
         // --- BINDINGS ---
         document.getElementById('join-btn').onclick = joinLobby;
-        document.getElementById('send-challenge').onclick = sendChallenge;
         document.getElementById('kickoff-btn').onclick = startMatch;
         document.getElementById('back-to-bracket').onclick = () => {
             document.getElementById('result-menu').classList.add('hidden');
@@ -536,7 +471,8 @@
         window.onkeydown = e => keys[e.code] = true;
         window.onkeyup = e => keys[e.code] = false;
 
-        initTournament();
+        // Auto-focus nickname field
+        window.onload = () => document.getElementById('user-nick').focus();
     </script>
 </body>
 </html>
