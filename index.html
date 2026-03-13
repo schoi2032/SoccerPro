@@ -176,22 +176,22 @@
         const ROUND_TIMES = { r16: 30, qf: 45, sf: 60, final: 90 };
 
         const allTeams = [
-            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}] },
-            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'De Bruyne', num: 17}] },
-            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Lewy', num: 9}, {name: 'Yamal', num: 19}] },
-            { id: 'bay', name: 'Bayern', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Musiala', num: 42}] },
-            { id: 'psg', name: 'PSG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}] },
-            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Salah', num: 11}, {name: 'Van Dijk', num: 4}] },
-            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Odegaard', num: 8}] },
-            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Lautaro', num: 10}, {name: 'Barella', num: 23}] },
-            { id: 'atm', name: 'Atleti', color: '#CB3524', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg', players: [{name: 'Griezmann', num: 7}, {name: 'Alvarez', num: 19}] },
-            { id: 'dor', name: 'Dortmund', color: '#FDE100', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg', players: [{name: 'Brandt', num: 10}, {name: 'Guirassy', num: 9}] },
-            { id: 'mil', name: 'AC Milan', color: '#FB090B', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg', players: [{name: 'Leao', num: 10}, {name: 'Pulisic', num: 11}] },
-            { id: 'juv', name: 'Juventus', color: '#000000', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg', players: [{name: 'Vlahovic', num: 9}, {name: 'Yildiz', num: 10}] },
-            { id: 'nap', name: 'Napoli', color: '#003D7E', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli_2021.svg', players: [{name: 'Kvara', num: 7}, {name: 'Lukaku', num: 11}] },
-            { id: 'ben', name: 'Benfica', color: '#E10000', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg', players: [{name: 'Di Maria', num: 11}, {name: 'Pavlidis', num: 14}] },
-            { id: 'por', name: 'FC Porto', color: '#0033A0', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg', players: [{name: 'Samu', num: 9}, {name: 'Galeno', num: 13}] },
-            { id: 'lev', name: 'Leverkusen', color: '#E32219', logo: 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg', players: [{name: 'Wirtz', num: 10}, {name: 'Grimaldo', num: 20}] }
+            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}, {name: 'Bellingham', num: 5}, {name: 'Rodrygo', num: 11}, {name: 'Modric', num: 10}] },
+            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'De Bruyne', num: 17}, {name: 'Foden', num: 47}, {name: 'Bernardo', num: 20}, {name: 'Rodri', num: 16}] },
+            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Lewy', num: 9}, {name: 'Yamal', num: 19}, {name: 'Raphinha', num: 11}, {name: 'Pedri', num: 8}, {name: 'Gavi', num: 6}] },
+            { id: 'bay', name: 'Bayern', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Musiala', num: 42}, {name: 'Sane', num: 10}, {name: 'Olise', num: 17}, {name: 'Muller', num: 25}] },
+            { id: 'psg', name: 'PSG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}, {name: 'Barcola', num: 29}, {name: 'Vitinha', num: 17}, {name: 'Kolo Muani', num: 23}] },
+            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Salah', num: 11}, {name: 'Van Dijk', num: 4}, {name: 'Diaz', num: 7}, {name: 'Nunez', num: 9}, {name: 'Gakpo', num: 18}] },
+            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Odegaard', num: 8}, {name: 'Havertz', num: 29}, {name: 'Martinelli', num: 11}, {name: 'Rice', num: 41}] },
+            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Lautaro', num: 10}, {name: 'Barella', num: 23}, {name: 'Thuram', num: 9}, {name: 'Calhanoglu', num: 20}, {name: 'Dimarco', num: 32}] },
+            { id: 'atm', name: 'Atleti', color: '#CB3524', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg', players: [{name: 'Griezmann', num: 7}, {name: 'Alvarez', num: 19}, {name: 'Sorloth', num: 9}, {name: 'De Paul', num: 5}, {name: 'Llorente', num: 14}] },
+            { id: 'dor', name: 'Dortmund', color: '#FDE100', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg', players: [{name: 'Brandt', num: 10}, {name: 'Guirassy', num: 9}, {name: 'Adeyemi', num: 27}, {name: 'Sabitzer', num: 20}, {name: 'Malen', num: 21}] },
+            { id: 'mil', name: 'AC Milan', color: '#FB090B', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg', players: [{name: 'Leao', num: 10}, {name: 'Pulisic', num: 11}, {name: 'Morata', num: 7}, {name: 'Hernandez', num: 19}, {name: 'Chukwueze', num: 21}] },
+            { id: 'juv', name: 'Juventus', color: '#000000', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg', players: [{name: 'Vlahovic', num: 9}, {name: 'Yildiz', num: 10}, {name: 'Koopmeiners', num: 8}, {name: 'Nico Gonzalez', num: 11}, {name: 'Conceicao', num: 7}] },
+            { id: 'nap', name: 'Napoli', color: '#003D7E', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli_2021.svg', players: [{name: 'Kvara', num: 7}, {name: 'Lukaku', num: 11}, {name: 'McTominay', num: 8}, {name: 'Politano', num: 21}, {name: 'Neres', num: 7}] },
+            { id: 'ben', name: 'Benfica', color: '#E10000', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg', players: [{name: 'Di Maria', num: 11}, {name: 'Pavlidis', num: 14}, {name: 'Kokcu', num: 10}, {name: 'Akturkoglu', num: 17}, {name: 'Amdouni', num: 7}] },
+            { id: 'por', name: 'FC Porto', color: '#0033A0', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg', players: [{name: 'Samu', num: 9}, {name: 'Galeno', num: 13}, {name: 'Vieira', num: 10}, {name: 'Pepe', num: 11}, {name: 'Namaso', num: 19}] },
+            { id: 'lev', name: 'Leverkusen', color: '#E32219', logo: 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg', players: [{name: 'Wirtz', num: 10}, {name: 'Grimaldo', num: 20}, {name: 'Boniface', num: 22}, {name: 'Schick', num: 14}, {name: 'Frimpong', num: 30}] }
         ];
 
         let bracket = { r16: [], qf: [], sf: [], final: [] };
@@ -274,12 +274,16 @@
                 if (this.y + this.radius > GROUND_Y) { this.y = GROUND_Y - this.radius; this.vy = 0; }
             }
             substitute() {
-                const key = 'subLock' + this.isP1;
-                if (keys[key]) return;
-                keys[key] = true;
-                setTimeout(() => delete keys[key], 600);
-                if (this.isP1) p1ActiveIdx = (p1ActiveIdx + 1) % p1Team.players.length;
-                else p2ActiveIdx = (p2ActiveIdx + 1) % p2Team.players.length;
+                const lockKey = 'subLock' + this.isP1;
+                if (keys[lockKey]) return;
+                keys[lockKey] = true;
+                setTimeout(() => delete keys[lockKey], 300); // Faster cycle time
+                
+                if (this.isP1) {
+                    p1ActiveIdx = (p1ActiveIdx + 1) % p1Team.players.length;
+                } else {
+                    p2ActiveIdx = (p2ActiveIdx + 1) % p2Team.players.length;
+                }
             }
             draw() {
                 const team = this.isP1 ? p1Team : p2Team;
@@ -342,7 +346,6 @@
             p2Colliding = checkCollide(p2);
 
             if (p1Colliding && p2Colliding) {
-                // COLLIDE POP LOGIC
                 ball.vy = -18;
                 ball.vx = (Math.random() - 0.5) * 10;
                 p1.vx = -15; p2.vx = 15;
