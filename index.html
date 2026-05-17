@@ -86,7 +86,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Touch Controls for mobile gameplay */
         .touch-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -105,8 +104,6 @@
             <canvas id="gameCanvas"></canvas>
             
             <div id="goal-text" class="goal-popup bungee">GOAL!</div>
-
-            <!-- Nickname Overlay (Start Screen) -->
             <div id="nickname-overlay" class="ui-overlay">
                 <div class="menu-card max-w-md">
                     <h1 class="text-4xl bungee mb-2 tracking-tight">STRIKER ELITE</h1>
@@ -132,8 +129,6 @@
                             Playoffs &gt; R16 &gt; QF &gt; SF &gt; Final
                         </div>
                     </div>
-                    
-                    <!-- Horizontal scroll container for the expanded bracket columns -->
                     <div class="overflow-x-auto w-full mb-4 pb-2 border border-white/5 rounded-xl bg-slate-950/40 p-3">
                         <div id="bracket-ui" class="grid grid-cols-5 gap-4 text-left min-w-[950px]">
                             <div class="flex flex-col justify-around gap-2" id="round-playoffs"></div>
@@ -180,14 +175,14 @@
                 </div>
             </div>
 
-            <!-- On-screen mobile controls -->
+
             <div id="mobile-controls" class="absolute bottom-6 left-0 right-0 px-6 flex justify-between pointer-events-none opacity-0 transition-opacity duration-500 z-50">
-                <!-- Left controls -->
+
                 <div class="flex gap-4 pointer-events-auto">
                     <button id="touch-left" class="touch-btn w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">←</button>
                     <button id="touch-right" class="touch-btn w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">→</button>
                 </div>
-                <!-- Right controls -->
+
                 <div class="flex gap-4 pointer-events-auto">
                     <button id="touch-sub" class="touch-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-xs font-bold font-sans">
                         <span>SUB</span>
@@ -197,7 +192,6 @@
                 </div>
             </div>
 
-            <!-- Match Result Menu -->
             <div id="result-menu" class="ui-overlay hidden">
                 <div class="menu-card max-w-md">
                     <h2 class="text-3xl bungee mb-2 text-white/60">MATCH RESULT</h2>
@@ -218,14 +212,14 @@
 
         // 8 elite direct round of 16 qualifiers
         const eliteTeams = [
-            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Odegaard', num: 8}] },
-            { id: 'bay', name: 'Bayern Munich', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Musiala', num: 42}] },
-            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Lewy', num: 9}, {name: 'Yamal', num: 19}] },
-            { id: 'psg', name: 'Paris SG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}] },
-            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}] },
-            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'De Bruyne', num: 17}] },
-            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Salah', num: 11}, {name: 'Van Dijk', num: 4}] },
-            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Lautaro', num: 10}, {name: 'Barella', num: 23}] }
+            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Gabriel', num: 6}, {name: 'Saliba', num: 2}, {name: 'Rice', num: 41}, {name: 'Zubimendi', num: 36}, {name: 'Timber', num: 12}, {name: 'Ødegaard', num: 8}, {name: 'Gyokeres', num: 14}, {name: 'Merino', num: 23}, {name: 'Trossard', num: 19}, {name: 'Raya', num: 1}] },
+            { id: 'bay', name: 'Bayern Munich', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Olise', num: 17}, {name: 'Díaz', num: 14}, {name: 'Musiala', num: 10}, {name: 'Kimmich', num: 6}, {name: 'Kim', num: 3}, {name: 'Tah', num: 4}, {name: 'Upamecano', num: 2}, {name: 'Laimer', num: 27}, {name: 'Davies', num: 19}, {name: 'Neuer', num: 1}] },
+            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Pedri', num: 8}, {name: 'Yamal', num: 10}, {name: 'Raphinha', num: 11}, {name: 'de Jong', num: 21}, {name: 'Cubarsi', num: 5}, {name: 'Gavi', num: 6}, {name: 'Olmo', num: 20}, {name: 'Kounde', num: 23}, {name: 'Rashford', num: 14}, {name: 'Lewandowski', num: 9}, {name: 'Garcia', num: 13}] },
+            { id: 'psg', name: 'Paris SG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}, {name: 'Vitinha', num: 17}, {name: 'Barcola', num: 29}, {name: 'Zaïre Emery', num: 33}, {name: 'Kvaraskhelia', num: 7}, {name: 'Marquinhos', num: 5}, {name: 'Neves', num: 87}, {name: 'Mendes', num: 25}, {name: 'Lee', num: 19}, {name: 'Doue', num: 14}] },
+            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}, {name: 'Bellingham', num: 5}, {name: 'Valverde', num: 8}, {name: 'Rudiger', num: 22}, {name: 'Tchouameni', num: 14}, {name: 'Rodrygo', num: 11}, {name: 'Camavinga', num: 6}, {name: 'Alexander-Arnold', num: 12}, {name: 'Militao', num: 3}, {name: 'Courtois', num: 1}] },
+            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'Rodri', num: 16}, {name: 'Bernardo', num: 20}, {name: 'Foden', num: 47}, {name: 'Nunes', num: 27}, {name: 'Doku', num: 11}, {name: 'Dias', num: 3}, {name: 'Gvardiol', num: 24}, {name: 'Cherki', num: 10}, {name: 'Rayan', num: 21}, {name: 'Donnarumma', num: 25}] },
+            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Van Dijk', num: 4}, {name: 'Wirtz', num: 7}, {name: 'Salah', num: 11}, {name: 'Konate', num: 5}, {name: 'Szobozlai', num: 8}, {name: 'Gravenberch', num: 38}, {name: 'Mac Allister', num: 10}, {name: 'Ekitike', num: 22}, {name: 'Gakpo', num: 18}, {name: 'Isak', num: 9}, {name: 'Marmardashvili', num: 25}] },
+            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Çalhanoglu', num: 20}, {name: 'Dimarco', num: 22}, {name: 'Martinez', num: 10}, {name: 'Barella', num: 23}, {name: 'Bastoni', num: 95}, {name: 'Thuram', num: 9}, {name: 'Akanji', num: 25}, {name: 'Zielinski', num: 7}, {name: 'Pavard', num: 5}, {name: 'Mkhitaryan', num: 22}, {name: 'Sommer', num: 1}] }
         ];
 
         const playoffTeams = [
