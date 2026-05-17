@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Champions Elite: Online & Tournament</title>
+    <title>Champions Elite: Playoff & Tournament Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;900&display=swap');
@@ -14,6 +14,8 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             overflow: hidden; background-color: #020617; 
             font-family: 'Inter', sans-serif; color: white;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #game-wrapper {
@@ -37,7 +39,6 @@
 
         .bungee { font-family: 'Bungee', cursive; }
 
-        /* UI Overlays */
         .ui-overlay { 
             position: absolute; inset: 0; 
             pointer-events: none; z-index: 100;
@@ -49,26 +50,25 @@
         .menu-card { 
             pointer-events: auto; 
             background: rgba(15, 23, 42, 0.95); 
-            padding: 2.5rem; border-radius: 1.5rem; 
+            padding: 2rem; border-radius: 1.5rem; 
             border: 1px solid rgba(251, 191, 36, 0.3); 
-            text-align: center; width: 90%; max-width: 900px;
+            text-align: center; width: 95%; max-width: 1100px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* Bracket Styling */
         .bracket-match { 
             background: rgba(255,255,255,0.03); 
             border: 1px solid rgba(255,255,255,0.1); 
             border-radius: 0.75rem; padding: 0.75rem; 
             margin-bottom: 0.5rem; font-size: 0.75rem; 
             cursor: pointer; transition: all 0.2s ease;
+            min-width: 160px;
         }
         .bracket-match:hover { border-color: var(--accent); background: rgba(251, 191, 36, 0.1); }
         .bracket-match.active { border-color: var(--accent); background: rgba(251, 191, 36, 0.2); transform: scale(1.02); }
         
         .winner-text { color: var(--accent); font-weight: 900; }
 
-        /* Goal Animation */
         .goal-popup { 
             position: absolute; top: 40%; left: 50%; 
             transform: translate(-50%, -50%) scale(0); 
@@ -85,6 +85,18 @@
             animation: spin 1s ease-in-out infinite; display: none;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Touch Controls for mobile gameplay */
+        .touch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            active-background: rgba(251, 191, 36, 0.4);
+            touch-action: manipulation;
+        }
+        .touch-btn:active {
+            background: rgba(251, 191, 36, 0.3);
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -94,9 +106,11 @@
             
             <div id="goal-text" class="goal-popup bungee">GOAL!</div>
 
+            <!-- Nickname Overlay (Start Screen) -->
             <div id="nickname-overlay" class="ui-overlay">
                 <div class="menu-card max-w-md">
-                    <h1 class="text-4xl bungee mb-6 tracking-tight">STRIKER ELITE</h1>
+                    <h1 class="text-4xl bungee mb-2 tracking-tight">STRIKER ELITE</h1>
+                    <p class="text-yellow-500 font-bold mb-6 text-sm">PRO TOURNAMENT & PLAYOFFS</p>
                     <div class="space-y-4">
                         <input id="user-nick" type="text" maxlength="12" class="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-center text-xl bungee uppercase focus:border-yellow-500 outline-none transition-colors" placeholder="ENTER NICKNAME">
                         <button id="join-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-950 py-4 bungee text-xl rounded-xl transition-all flex items-center justify-center gap-3">
@@ -108,34 +122,41 @@
             </div>
 
             <div id="tournament-menu" class="ui-overlay hidden">
-                <div class="menu-card overflow-hidden flex flex-col max-h-[90vh]">
-                    <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                <div class="menu-card overflow-hidden flex flex-col max-h-[95vh]">
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
                         <div class="text-left">
                             <h1 class="text-3xl bungee text-white italic leading-none">WORLD TOURNAMENT</h1>
                             <p id="my-nick-display" class="text-yellow-500 bungee text-xs mt-1 opacity-80"></p>
                         </div>
+                        <div class="text-right text-[10px] opacity-60 uppercase font-bold text-yellow-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                            Playoffs &gt; R16 &gt; QF &gt; SF &gt; Final
+                        </div>
                     </div>
                     
-                    <div id="bracket-ui" class="grid grid-cols-4 gap-4 mb-6 overflow-y-auto pr-2 text-left flex-1 min-h-0">
-                        <div class="flex flex-col justify-around gap-2" id="round-r16"></div>
-                        <div class="flex flex-col justify-around gap-2" id="round-qf"></div>
-                        <div class="flex flex-col justify-around gap-2" id="round-sf"></div>
-                        <div class="flex flex-col justify-around gap-2" id="round-final"></div>
+                    <!-- Horizontal scroll container for the expanded bracket columns -->
+                    <div class="overflow-x-auto w-full mb-4 pb-2 border border-white/5 rounded-xl bg-slate-950/40 p-3">
+                        <div id="bracket-ui" class="grid grid-cols-5 gap-4 text-left min-w-[950px]">
+                            <div class="flex flex-col justify-around gap-2" id="round-playoffs"></div>
+                            <div class="flex flex-col justify-around gap-2" id="round-r16"></div>
+                            <div class="flex flex-col justify-around gap-2" id="round-qf"></div>
+                            <div class="flex flex-col justify-around gap-2" id="round-sf"></div>
+                            <div class="flex flex-col justify-around gap-2" id="round-final"></div>
+                        </div>
                     </div>
 
                     <div id="match-preview" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-300 p-4 bg-white/5 rounded-xl border border-white/10">
                         <div class="flex justify-around items-center">
                             <div class="flex flex-col items-center gap-2">
-                                <img id="prev-p1-logo" class="w-16 h-16 object-contain" src="">
-                                <span id="prev-p1-name" class="bungee text-xs">TEAM A</span>
+                                <img id="prev-p1-logo" class="w-14 h-14 object-contain" src="" onerror="this.style.display='none'">
+                                <span id="prev-p1-name" class="bungee text-xs text-center max-w-[120px] truncate">TEAM A</span>
                             </div>
                             <div class="text-center">
                                 <div class="text-3xl bungee text-yellow-500" id="match-duration-display">30s</div>
                                 <div class="text-[10px] bungee opacity-40">MATCH LENGTH</div>
                             </div>
                             <div class="flex flex-col items-center gap-2">
-                                <img id="prev-p2-logo" class="w-16 h-16 object-contain" src="">
-                                <span id="prev-p2-name" class="bungee text-xs">TEAM B</span>
+                                <img id="prev-p2-logo" class="w-14 h-14 object-contain" src="" onerror="this.style.display='none'">
+                                <span id="prev-p2-name" class="bungee text-xs text-center max-w-[120px] truncate">TEAM B</span>
                             </div>
                         </div>
                         <button id="kickoff-btn" class="mt-4 w-full bg-yellow-500 hover:bg-yellow-400 text-slate-950 py-3 bungee text-lg rounded-xl transition-all">START MATCH</button>
@@ -144,21 +165,39 @@
             </div>
 
             <div id="hud" class="absolute top-8 left-0 w-full flex justify-center items-start pointer-events-none opacity-0 transition-opacity duration-500">
-                <div id="hud-bg" class="flex items-center gap-8 bg-slate-900/80 px-10 py-4 rounded-full backdrop-blur-md border border-white/10 shadow-2xl">
-                    <div class="flex items-center gap-4">
-                        <img id="hud-p1-logo" class="w-12 h-12 object-contain" src="">
-                        <div id="hud-p1-score" class="text-5xl bungee leading-none">0</div>
+                <div id="hud-bg" class="flex items-center gap-8 bg-slate-900/90 px-8 py-3 rounded-full backdrop-blur-md border border-white/10 shadow-2xl">
+                    <div class="flex items-center gap-3">
+                        <img id="hud-p1-logo" class="w-10 h-10 object-contain" src="" onerror="this.style.display='none'">
+                        <div id="hud-p1-score" class="text-4xl bungee leading-none">0</div>
                     </div>
-                    <div class="flex flex-col items-center min-w-[120px]">
-                        <div id="timer" class="text-4xl bungee text-yellow-400">00:30</div>
+                    <div class="flex flex-col items-center min-w-[100px]">
+                        <div id="timer" class="text-3xl bungee text-yellow-400">00:30</div>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div id="hud-p2-score" class="text-5xl bungee leading-none">0</div>
-                        <img id="hud-p2-logo" class="w-12 h-12 object-contain" src="">
+                    <div class="flex items-center gap-3">
+                        <div id="hud-p2-score" class="text-4xl bungee leading-none">0</div>
+                        <img id="hud-p2-logo" class="w-10 h-10 object-contain" src="" onerror="this.style.display='none'">
                     </div>
                 </div>
             </div>
 
+            <!-- On-screen mobile controls -->
+            <div id="mobile-controls" class="absolute bottom-6 left-0 right-0 px-6 flex justify-between pointer-events-none opacity-0 transition-opacity duration-500 z-50">
+                <!-- Left controls -->
+                <div class="flex gap-4 pointer-events-auto">
+                    <button id="touch-left" class="touch-btn w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">←</button>
+                    <button id="touch-right" class="touch-btn w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">→</button>
+                </div>
+                <!-- Right controls -->
+                <div class="flex gap-4 pointer-events-auto">
+                    <button id="touch-sub" class="touch-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-xs font-bold font-sans">
+                        <span>SUB</span>
+                        <span class="text-[9px] text-yellow-400">TAP S</span>
+                    </button>
+                    <button id="touch-up" class="touch-btn w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">↑</button>
+                </div>
+            </div>
+
+            <!-- Match Result Menu -->
             <div id="result-menu" class="ui-overlay hidden">
                 <div class="menu-card max-w-md">
                     <h2 class="text-3xl bungee mb-2 text-white/60">MATCH RESULT</h2>
@@ -173,28 +212,42 @@
         const WIDTH = 1200, HEIGHT = 700, GROUND_Y = 640;
         const GRAVITY = 0.55, BALL_BOUNCE = 0.85, FRICTION = 0.98;
         const GOAL_WIDTH = 80, GOAL_HEIGHT = 200;
-        const ROUND_TIMES = { r16: 30, qf: 45, sf: 60, final: 90 };
+        
+        // Match lengths for each progressive phase of the tournament
+        const ROUND_TIMES = { playoffs: 30, r16: 45, qf: 60, sf: 75, final: 90 };
 
-        const allTeams = [
-            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}, {name: 'Bellingham', num: 5}, {name: 'Rodrygo', num: 11}, {name: 'Modric', num: 10}] },
-            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'De Bruyne', num: 17}, {name: 'Foden', num: 47}, {name: 'Bernardo', num: 20}, {name: 'Rodri', num: 16}] },
-            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Lewy', num: 9}, {name: 'Yamal', num: 19}, {name: 'Raphinha', num: 11}, {name: 'Pedri', num: 8}, {name: 'Gavi', num: 6}] },
-            { id: 'bay', name: 'Bayern', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Musiala', num: 42}, {name: 'Sane', num: 10}, {name: 'Olise', num: 17}, {name: 'Muller', num: 25}] },
-            { id: 'psg', name: 'PSG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}, {name: 'Barcola', num: 29}, {name: 'Vitinha', num: 17}, {name: 'Kolo Muani', num: 23}] },
-            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Salah', num: 11}, {name: 'Van Dijk', num: 4}, {name: 'Diaz', num: 7}, {name: 'Nunez', num: 9}, {name: 'Gakpo', num: 18}] },
-            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Odegaard', num: 8}, {name: 'Havertz', num: 29}, {name: 'Martinelli', num: 11}, {name: 'Rice', num: 41}] },
-            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Lautaro', num: 10}, {name: 'Barella', num: 23}, {name: 'Thuram', num: 9}, {name: 'Calhanoglu', num: 20}, {name: 'Dimarco', num: 32}] },
-            { id: 'atm', name: 'Atleti', color: '#CB3524', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg', players: [{name: 'Griezmann', num: 7}, {name: 'Alvarez', num: 19}, {name: 'Sorloth', num: 9}, {name: 'De Paul', num: 5}, {name: 'Llorente', num: 14}] },
-            { id: 'dor', name: 'Dortmund', color: '#FDE100', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg', players: [{name: 'Brandt', num: 10}, {name: 'Guirassy', num: 9}, {name: 'Adeyemi', num: 27}, {name: 'Sabitzer', num: 20}, {name: 'Malen', num: 21}] },
-            { id: 'mil', name: 'AC Milan', color: '#FB090B', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg', players: [{name: 'Leao', num: 10}, {name: 'Pulisic', num: 11}, {name: 'Morata', num: 7}, {name: 'Hernandez', num: 19}, {name: 'Chukwueze', num: 21}] },
-            { id: 'juv', name: 'Juventus', color: '#000000', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg', players: [{name: 'Vlahovic', num: 9}, {name: 'Yildiz', num: 10}, {name: 'Koopmeiners', num: 8}, {name: 'Nico Gonzalez', num: 11}, {name: 'Conceicao', num: 7}] },
-            { id: 'nap', name: 'Napoli', color: '#003D7E', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli_2021.svg', players: [{name: 'Kvara', num: 7}, {name: 'Lukaku', num: 11}, {name: 'McTominay', num: 8}, {name: 'Politano', num: 21}, {name: 'Neres', num: 7}] },
-            { id: 'ben', name: 'Benfica', color: '#E10000', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg', players: [{name: 'Di Maria', num: 11}, {name: 'Pavlidis', num: 14}, {name: 'Kokcu', num: 10}, {name: 'Akturkoglu', num: 17}, {name: 'Amdouni', num: 7}] },
-            { id: 'por', name: 'FC Porto', color: '#0033A0', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg', players: [{name: 'Samu', num: 9}, {name: 'Galeno', num: 13}, {name: 'Vieira', num: 10}, {name: 'Pepe', num: 11}, {name: 'Namaso', num: 19}] },
-            { id: 'lev', name: 'Leverkusen', color: '#E32219', logo: 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg', players: [{name: 'Wirtz', num: 10}, {name: 'Grimaldo', num: 20}, {name: 'Boniface', num: 22}, {name: 'Schick', num: 14}, {name: 'Frimpong', num: 30}] }
+        // 8 elite direct round of 16 qualifiers
+        const eliteTeams = [
+            { id: 'ars', name: 'Arsenal', color: '#EF0107', logo: 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', players: [{name: 'Saka', num: 7}, {name: 'Odegaard', num: 8}] },
+            { id: 'bay', name: 'Bayern Munich', color: '#DC052D', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg', players: [{name: 'Kane', num: 9}, {name: 'Musiala', num: 42}] },
+            { id: 'bar', name: 'Barcelona', color: '#004D98', logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg', players: [{name: 'Lewy', num: 9}, {name: 'Yamal', num: 19}] },
+            { id: 'psg', name: 'Paris SG', color: '#004170', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg', players: [{name: 'Dembele', num: 10}, {name: 'Hakimi', num: 2}] },
+            { id: 'rma', name: 'Real Madrid', color: '#FFFFFF', logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg', players: [{name: 'Mbappe', num: 9}, {name: 'Vini Jr', num: 7}] },
+            { id: 'mci', name: 'Man City', color: '#6CABDD', logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', players: [{name: 'Haaland', num: 9}, {name: 'De Bruyne', num: 17}] },
+            { id: 'liv', name: 'Liverpool', color: '#C8102E', logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', players: [{name: 'Salah', num: 11}, {name: 'Van Dijk', num: 4}] },
+            { id: 'int', name: 'Inter Milan', color: '#0062AD', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg', players: [{name: 'Lautaro', num: 10}, {name: 'Barella', num: 23}] }
         ];
 
-        let bracket = { r16: [], qf: [], sf: [], final: [] };
+        const playoffTeams = [
+            { id: 'mun', name: 'Man United', color: '#DA291C', logo: 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg', players: [{name: 'Bruno F.', num: 8}, {name: 'Rashford', num: 10}] },
+            { id: 'dor', name: 'Dortmund', color: '#FDE100', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg', players: [{name: 'Brandt', num: 10}, {name: 'Guirassy', num: 9}] },
+            { id: 'scp', name: 'Sporting CP', color: '#00805C', logo: 'https://upload.wikimedia.org/wikipedia/en/e/e1/Sporting_CP.svg', players: [{name: 'Gyökeres', num: 9}, {name: 'Hjulmand', num: 42}] },
+            { id: 'nap', name: 'Napoli', color: '#003D7E', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli_2021.svg', players: [{name: 'Kvara', num: 7}, {name: 'Lukaku', num: 11}] },
+            { id: 'juv', name: 'Juventus', color: '#000000', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg', players: [{name: 'Vlahovic', num: 9}, {name: 'Yildiz', num: 10}] },
+            { id: 'fla', name: 'Flamengo', color: '#C4122E', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Flamengo_brazilian_crest.svg', players: [{name: 'Pedro', num: 9}, {name: 'Arrascaeta', num: 14}] },
+            { id: 'bou', name: 'Bournemouth', color: '#B50E12', logo: 'https://upload.wikimedia.org/wikipedia/en/e/e5/AFC_Bournemouth_%282013%29.svg', players: [{name: 'Semenyo', num: 24}, {name: 'Kluivert', num: 19}] },
+            { id: 'avl', name: 'Aston Villa', color: '#95BFE5', logo: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Aston_Villa_logo.svg', players: [{name: 'Watkins', num: 11}, {name: 'Bailey', num: 31}] },
+            { id: 'ben', name: 'Benfica', color: '#E10000', logo: 'https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg', players: [{name: 'Di Maria', num: 11}, {name: 'Pavlidis', num: 14}] },
+            { id: 'lev', name: 'Leverkusen', color: '#E32219', logo: 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg', players: [{name: 'Wirtz', num: 10}, {name: 'Grimaldo', num: 20}] },
+            { id: 'rom', name: 'AS Roma', color: '#8E1D31', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg', players: [{name: 'Dybala', num: 21}, {name: 'Pellegrini', num: 7}] },
+            { id: 'atm', name: 'Atleti', color: '#CB3524', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg', players: [{name: 'Griezmann', num: 7}, {name: 'Alvarez', num: 19}] },
+            { id: 'bha', name: 'Brighton', color: '#0057B8', logo: 'https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_%26_Hove_Albion_logo.svg', players: [{name: 'Pedro', num: 9}, {name: 'Mitoma', num: 22}] },
+            { id: 'psv', name: 'PSV Eindhoven', color: '#E21A1A', logo: 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg', players: [{name: 'L. de Jong', num: 9}, {name: 'Bakayoko', num: 11}] },
+            { id: 'com', name: 'Como 1907', color: '#1F355E', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Como_1907_logo.png', players: [{name: 'Cutrone', num: 10}, {name: 'Belotti', num: 11}] },
+            { id: 'pal', name: 'Palmeiras', color: '#006437', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg', players: [{name: 'Veiga', num: 20}, {name: 'Estêvão', num: 41}] }
+        ];
+
+        let bracket = { playoffs: [], r16: [], qf: [], sf: [], final: [] };
         let activeMatch = null, nickname = "";
         let p1Team, p2Team, p1ActiveIdx = 0, p2ActiveIdx = 0;
         let score = [0, 0], gameTime = 30, gameRunning = false, isGameOver = false, isGoalScored = false;
@@ -274,16 +327,12 @@
                 if (this.y + this.radius > GROUND_Y) { this.y = GROUND_Y - this.radius; this.vy = 0; }
             }
             substitute() {
-                const lockKey = 'subLock' + this.isP1;
-                if (keys[lockKey]) return;
-                keys[lockKey] = true;
-                setTimeout(() => delete keys[lockKey], 300); // Faster cycle time
-                
-                if (this.isP1) {
-                    p1ActiveIdx = (p1ActiveIdx + 1) % p1Team.players.length;
-                } else {
-                    p2ActiveIdx = (p2ActiveIdx + 1) % p2Team.players.length;
-                }
+                const key = 'subLock' + this.isP1;
+                if (keys[key]) return;
+                keys[key] = true;
+                setTimeout(() => delete keys[key], 600);
+                if (this.isP1) p1ActiveIdx = (p1ActiveIdx + 1) % p1Team.players.length;
+                else p2ActiveIdx = (p2ActiveIdx + 1) % p2Team.players.length;
             }
             draw() {
                 const team = this.isP1 ? p1Team : p2Team;
@@ -346,6 +395,7 @@
             p2Colliding = checkCollide(p2);
 
             if (p1Colliding && p2Colliding) {
+                // COLLIDE POP LOGIC
                 ball.vy = -18;
                 ball.vx = (Math.random() - 0.5) * 10;
                 p1.vx = -15; p2.vx = 15;
@@ -375,33 +425,82 @@
             document.getElementById('nickname-overlay').classList.add('hidden');
             document.getElementById('tournament-menu').classList.remove('hidden');
             document.getElementById('my-nick-display').innerText = `LOGGED IN AS: ${nickname}`;
+            
+            // Show mobile controls if touch interface is detected
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                document.getElementById('mobile-controls').classList.remove('opacity-0');
+            }
+            
             initTournament();
         }
 
         function initTournament() {
-            bracket = { r16: [], qf: [], sf: [], final: [] };
-            let pool = [...allTeams].sort(() => Math.random() - 0.5);
-            for(let i=0; i<8; i++) bracket.r16.push({ id: `r16-${i}`, p1: pool[i*2], p2: pool[i*2+1], winner: null });
-            ['qf', 'sf', 'final'].forEach(r => {
-                const count = r === 'qf' ? 4 : (r === 'sf' ? 2 : 1);
-                for(let i=0; i<count; i++) bracket[r].push({ id: `${r}-${i}`, p1: null, p2: null, winner: null });
-            });
+            bracket = { playoffs: [], r16: [], qf: [], sf: [], final: [] };
+            
+            // Randomize elite direct qualifiers and playoff contenders
+            let elitePool = [...eliteTeams].sort(() => Math.random() - 0.5);
+            let playoffPool = [...playoffTeams].sort(() => Math.random() - 0.5);
+
+            // Populate 8 Playoff matchups from the 16 playoff teams
+            for (let i = 0; i < 8; i++) {
+                bracket.playoffs.push({
+                    id: `playoffs-${i}`,
+                    p1: playoffPool[i * 2],
+                    p2: playoffPool[i * 2 + 1],
+                    winner: null
+                });
+            }
+
+            // Populate Round of 16.
+            // p1 is prefilled with an elite direct qualifier.
+            // p2 will be filled by the winner of the corresponding playoffs match.
+            for (let i = 0; i < 8; i++) {
+                bracket.r16.push({
+                    id: `r16-${i}`,
+                    p1: elitePool[i],
+                    p2: null,
+                    winner: null
+                });
+            }
+
+            // Initialize remaining tournament progression phases
+            for (let i = 0; i < 4; i++) {
+                bracket.qf.push({ id: `qf-${i}`, p1: null, p2: null, winner: null });
+            }
+            for (let i = 0; i < 2; i++) {
+                bracket.sf.push({ id: `sf-${i}`, p1: null, p2: null, winner: null });
+            }
+            bracket.final.push({ id: `final-0`, p1: null, p2: null, winner: null });
+
             renderBracket();
         }
 
         function renderBracket() {
-            const rounds = ['r16', 'qf', 'sf', 'final'];
+            const rounds = ['playoffs', 'r16', 'qf', 'sf', 'final'];
             rounds.forEach(r => {
                 const container = document.getElementById('round-' + r);
-                container.innerHTML = `<h4 class="bungee text-[10px] opacity-30 mb-2">${r.toUpperCase()}</h4>`;
+                let roundHeaderName = r === 'playoffs' ? 'PLAYOFFS' : r.toUpperCase();
+                container.innerHTML = `<h4 class="bungee text-[10px] opacity-40 mb-2 border-b border-white/10 pb-1 text-yellow-500">${roundHeaderName}</h4>`;
+                
                 bracket[r].forEach(match => {
                     const el = document.createElement('div');
                     el.className = `bracket-match ${activeMatch?.id === match.id ? 'active' : ''}`;
+                    
+                    const p1Name = match.p1 ? match.p1.name : '???';
+                    let p2Name = '???';
+                    if (match.p2) {
+                        p2Name = match.p2.name;
+                    } else if (r === 'r16') {
+                        const playOffMatchIndex = parseInt(match.id.split('-')[1]);
+                        p2Name = `PLAYOFF ${playOffMatchIndex + 1} WINNER`;
+                    }
+
                     el.innerHTML = `
-                        <div class="${match.winner?.id === match.p1?.id ? 'winner-text' : ''}">${match.p1?.name || '???'}</div>
+                        <div class="truncate ${match.winner?.id === match.p1?.id ? 'winner-text' : ''}">${p1Name}</div>
                         <div class="h-px bg-white/10 my-1"></div>
-                        <div class="${match.winner?.id === match.p2?.id ? 'winner-text' : ''}">${match.p2?.name || '???'}</div>
+                        <div class="truncate ${match.winner?.id === match.p2?.id ? 'winner-text' : ''}">${p2Name}</div>
                     `;
+                    
                     if (!match.winner && match.p1 && match.p2) {
                         el.onclick = () => {
                             activeMatch = match;
@@ -446,14 +545,23 @@
             gameRunning = false; isGameOver = true;
             if (score[0] === score[1]) score[Math.random() > 0.5 ? 0 : 1]++; 
             const winner = score[0] > score[1] ? p1Team : p2Team;
+            
             if (activeMatch) {
                 activeMatch.winner = winner;
-                const rKeys = ['r16', 'qf', 'sf', 'final'];
-                const curIdx = rKeys.indexOf(activeMatch.id.split('-')[0]);
-                if (curIdx < 3) {
-                    const nKey = rKeys[curIdx+1];
-                    const mIdx = parseInt(activeMatch.id.split('-')[1]);
-                    const target = bracket[nKey][Math.floor(mIdx/2)];
+                const roundType = activeMatch.id.split('-')[0];
+                const mIdx = parseInt(activeMatch.id.split('-')[1]);
+
+                if (roundType === 'playoffs') {
+                    // Winner of playoffs-k progresses to r16-k's p2 slot
+                    bracket.r16[mIdx].p2 = winner;
+                } else if (roundType === 'r16') {
+                    const target = bracket.qf[Math.floor(mIdx/2)];
+                    if (mIdx % 2 === 0) target.p1 = winner; else target.p2 = winner;
+                } else if (roundType === 'qf') {
+                    const target = bracket.sf[Math.floor(mIdx/2)];
+                    if (mIdx % 2 === 0) target.p1 = winner; else target.p2 = winner;
+                } else if (roundType === 'sf') {
+                    const target = bracket.final[0];
                     if (mIdx % 2 === 0) target.p1 = winner; else target.p2 = winner;
                 }
             }
@@ -470,6 +578,23 @@
             document.getElementById('match-preview').classList.add('hidden');
             activeMatch = null; renderBracket();
         };
+
+        const setupTouchControl = (btnId, keyCode) => {
+            const btn = document.getElementById(btnId);
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys[keyCode] = true;
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys[keyCode] = false;
+            });
+        };
+
+        setupTouchControl('touch-left', 'KeyA');
+        setupTouchControl('touch-right', 'KeyD');
+        setupTouchControl('touch-up', 'KeyW');
+        setupTouchControl('touch-sub', 'KeyS');
 
         window.onkeydown = e => keys[e.code] = true;
         window.onkeyup = e => keys[e.code] = false;
